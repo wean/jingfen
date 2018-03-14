@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Scrapy settings for jingfen project
+# Scrapy settings for jfen project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -19,7 +19,7 @@ LOG_LEVEL = "WARNING"
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'jingfen (+http://www.yourdomain.com)'
+#USER_AGENT = 'jfen (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
@@ -47,18 +47,19 @@ DEFAULT_REQUEST_HEADERS = {
   'Accept-Language': 'en',
   'Content-Type': "application/x-www-form-urlencoded",
   'Cache-Control': "no-cache",
+  'Referer': "https://qwd.jd.com/goodslist.shtml?actId=10473&title=%E5%A5%BD%E5%88%B8%E5%95%86%E5%93%81"
 }
 
 # Enable or disable spider middlewares
 # See https://doc.scrapy.org/en/latest/topics/spider-middleware.html
 #SPIDER_MIDDLEWARES = {
-#    'jingfen.middlewares.JingfenSpiderMiddleware': 543,
+#    'jfen.middlewares.JingfenSpiderMiddleware': 543,
 #}
 
 # Enable or disable downloader middlewares
 # See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
 #DOWNLOADER_MIDDLEWARES = {
-#    'jingfen.middlewares.JingfenDownloaderMiddleware': 543,
+#    'jfen.middlewares.JingfenDownloaderMiddleware': 543,
 #}
 
 # Enable or disable extensions
@@ -70,11 +71,11 @@ DEFAULT_REQUEST_HEADERS = {
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 # ITEM_PIPELINES = {
-#    'jingfen.pipelines.JingfenPipeline': 300,
+#    'jfen.pipelines.JingfenPipeline': 300,
 # }
 ITEM_PIPELINES = {
     'jingfen.pipelines.JingfenPipeline': 300,
-    'scrapy_mysql_pipeline.MySQLPipeline': 400,
+    # 'scrapy_mysql_pipeline.MySQLPipeline': 400,
 }
 
 # MySql
@@ -82,8 +83,8 @@ MYSQL_HOST = '118.24.159.168'
 MYSQL_PORT = 3306
 MYSQL_USER = "zhuchen"
 MYSQL_PASSWORD = 'zhuchen'
-MYSQL_DB = "jingfen"
-MYSQL_TABLE = "jingfen_products"
+MYSQL_DB = "jingfen_dev"
+# MYSQL_TABLE = "jingfen_products"
 MYSQL_UPSERT = False
 MYSQL_RETRIES = 3
 MYSQL_CLOSE_ON_ERROR = True
