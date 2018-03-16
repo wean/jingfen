@@ -9,12 +9,12 @@ from run import db, app
 from run import Commons
 import decimal
 import better_exceptions
+
 better_exceptions.MAX_LENGTH = None
 
 
 # Session = sessionmaker(bind=eng)
 class JingfenPipeline(Commons, object):
-
     def process_item(self, item, spider):
         print item
         if item['come_from'] == 'product_class':
@@ -112,6 +112,7 @@ class JingfenPipeline(Commons, object):
             product.ticket_amount = ticket_amount
             product.ticket_valid = ticket_valid
             product.good_come = good_come
+            product.jingfen_class_id = jingfen_class_id
         else:
             product = Product(jingfen_class_id, title, sku, price, bonus_rate,
                               prize_amout, start_time=start_time, end_time=end_time, spu=spu, image_url=image_url,
@@ -120,5 +121,3 @@ class JingfenPipeline(Commons, object):
                               ticket_valid=ticket_valid, good_come=good_come
                               )
         self.save(product)
-
-

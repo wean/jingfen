@@ -8,7 +8,6 @@
 import scrapy
 
 
-
 class ClassItem(scrapy.Item):
     f = scrapy.Field()
     # define the fields for your item here like:
@@ -44,5 +43,3 @@ class ProductItem(scrapy.Item):
     good_come = f
     come_from = f
     jingfen_class_id = f
-
-

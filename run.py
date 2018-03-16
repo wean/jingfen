@@ -21,12 +21,11 @@ import json
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 import better_exceptions
+
 better_exceptions.MAX_LENGTH = None
 
 
-
-
-#---------------------------------------------#config------------------------------------------------------------------------#
+# ---------------------------------------------#config------------------------------------------------------------------------#
 class Config:
     """
     基本配置类
@@ -54,6 +53,7 @@ class Config:
     #
     PERMANENT_SESSION_LIFETIME = 86400  # session数据的有效期 秒
 
+
 class DevelopmentConfig(Config):
     """
     开发模式的参数配置
@@ -74,9 +74,7 @@ config = {
     "production": ProductionConfig,  # 生产环境
 }
 
-
-
-#---------------------------------------------#db and create_app------------------------------------------------------------------------#
+# ---------------------------------------------#db and create_app------------------------------------------------------------------------#
 db = SQLAlchemy()
 
 db_base = db.Column
@@ -118,67 +116,62 @@ def create_app(config_name):
     return app
 
 
-
-
-#---------------------------------------------#response_code------------------------------------------------------------------------#
+# ---------------------------------------------#response_code------------------------------------------------------------------------#
 # 导包
 class RET:
-    OK                  = "0"
-    DBERR               = "4001"
-    NODATA              = "4002"
-    DATAEXIST           = "4003"
-    DATAERR             = "4004"
-    SESSIONERR          = "4101"
-    LOGINERR            = "4102"
-    PARAMERR            = "4103"
-    USERERR             = "4104"
-    ROLEERR             = "4105"
-    PWDERR              = "4106"
-    REQERR              = "4201"
-    IPERR               = "4202"
-    THIRDERR            = "4301"
-    IOERR               = "4302"
-    SERVERERR           = "4500"
-    UNKOWNERR           = "4501"
+    OK = "0"
+    DBERR = "4001"
+    NODATA = "4002"
+    DATAEXIST = "4003"
+    DATAERR = "4004"
+    SESSIONERR = "4101"
+    LOGINERR = "4102"
+    PARAMERR = "4103"
+    USERERR = "4104"
+    ROLEERR = "4105"
+    PWDERR = "4106"
+    REQERR = "4201"
+    IPERR = "4202"
+    THIRDERR = "4301"
+    IOERR = "4302"
+    SERVERERR = "4500"
+    UNKOWNERR = "4501"
+
 
 error_map = {
-    RET.OK                    : u"成功",
-    RET.DBERR                 : u"数据库查询错误",
-    RET.NODATA                : u"无数据",
-    RET.DATAEXIST             : u"数据已存在",
-    RET.DATAERR               : u"数据错误",
-    RET.SESSIONERR            : u"用户未登录",
-    RET.LOGINERR              : u"用户登录失败",
-    RET.PARAMERR              : u"参数错误",
-    RET.USERERR               : u"用户不存在或未激活",
-    RET.ROLEERR               : u"用户身份错误",
-    RET.PWDERR                : u"密码错误",
-    RET.REQERR                : u"非法请求或请求次数受限",
-    RET.IPERR                 : u"IP受限",
-    RET.THIRDERR              : u"第三方系统错误",
-    RET.IOERR                 : u"文件读写错误",
-    RET.SERVERERR             : u"内部错误",
-    RET.UNKOWNERR             : u"未知错误",
+    RET.OK: u"成功",
+    RET.DBERR: u"数据库查询错误",
+    RET.NODATA: u"无数据",
+    RET.DATAEXIST: u"数据已存在",
+    RET.DATAERR: u"数据错误",
+    RET.SESSIONERR: u"用户未登录",
+    RET.LOGINERR: u"用户登录失败",
+    RET.PARAMERR: u"参数错误",
+    RET.USERERR: u"用户不存在或未激活",
+    RET.ROLEERR: u"用户身份错误",
+    RET.PWDERR: u"密码错误",
+    RET.REQERR: u"非法请求或请求次数受限",
+    RET.IPERR: u"IP受限",
+    RET.THIRDERR: u"第三方系统错误",
+    RET.IOERR: u"文件读写错误",
+    RET.SERVERERR: u"内部错误",
+    RET.UNKOWNERR: u"未知错误",
 }
-
-
-
 
 redis_store = redis.StrictRedis(host=Config.REDIS_HOST, port=Config.REDIS_PORT)
 
 
-
 class RegexConverter(BaseConverter):
     """在路由中使用正则表达式进行参数提取的工具"""
+
     def __init__(self, url_map, *args):
         super(RegexConverter, self).__init__(url_map)
         self.regex = args[0]
 
 
-#---------------------------------------------#commons------------------------------------------------------------------------#
+# ---------------------------------------------#commons------------------------------------------------------------------------#
 
 class Commons(object):
-
     def __init__(self):
         self.name = None
 
@@ -188,9 +181,10 @@ class Commons(object):
         :param f:
         :return:
         """
+
         # functools让被装饰的函数名称不会改变
         @functools.wraps(f)
-        def wrapper(*arges,**kwargs):
+        def wrapper(*arges, **kwargs):
             # 从session中获取user_id
             user_id = session.get('user_id')
             if user_id is None:
@@ -199,6 +193,7 @@ class Commons(object):
                 # 用户已经登录
                 g.user_id = user_id
                 return f(*arges, **kwargs)
+
         return wrapper
 
     @staticmethod
@@ -210,7 +205,6 @@ class Commons(object):
         now = arrow.now().datetime if not is_str else arrow.now().format(format)
 
         return now
-
 
     def str_to_datetime(self, time_str):
         if isinstance(time_str, str):
@@ -247,18 +241,17 @@ class Commons(object):
         return datetime
 
 
+# ---------------------------------------------#models------------------------------------------------------------------------#
 
 
-#---------------------------------------------#models------------------------------------------------------------------------#
-
-
-class BaseModel(object):
-    common = Commons()
-    now = common.now()
+class BaseModel(Commons, object):
     """模型基类，为每个模型添加创建时间和更新时间"""
+
+    def __init__(self):
+        super(BaseModel, self).__init__()
+
     create_time = db.Column(db.DATETIME, default=now)
     update_time = db.Column(db.DATETIME, default=now, onupdate=now)
-
 
 
 class JingFenClass(BaseModel, db.Model):
@@ -274,9 +267,11 @@ class JingFenClass(BaseModel, db.Model):
     pic_url = db.Column(db.String(512), nullable=False, default='')
     type = db.Column(db.Integer, unique=False, nullable=False, default=0)
     content_skus = db.Column(db.Text, nullable=True, default='')
-    products = db.relationship('Product', backref='jingfen_class', lazy='dynamic')
+    products = db.relationship('Product', backref='jingfenclass') # 分类下的所有产品
 
     def __init__(self, name=None, jd_uid=None):
+        self.create_time = self.now
+        self.update_time = self.now
         self.name = name
         self.jd_uid = jd_uid
 
@@ -296,8 +291,8 @@ class JingFenClass(BaseModel, db.Model):
         }
         return class_dict
 
-    # def __repr__(self):
-    #     return self.name
+        # def __repr__(self):
+        #     return self.name
 
 
 class Product(BaseModel, db.Model):
@@ -325,11 +320,14 @@ class Product(BaseModel, db.Model):
     ticket_valid = db_base(db.Boolean, default=False)
     good_come = db_base(db.Integer, default=0)
     jingfen_class_id = db_base(db.Integer, db.ForeignKey('jingfen_class.id'))
+    jingfen_class = relationship('JingFenClass') # jingfen_calss 映射到JingFenClass 这个对象
 
-    def __init__(self, jingfenclass_id, title, sku, price, bonus_rate, prize_amount, start_time=None, end_time=None, spu=None, image_url=None,
-                 url=None, link=None, ticket_id=None, ticket_total_number=None, ticket_used_number=None, ticket_amount=None,
+    def __init__(self, jingfenclass_id, title, sku, price, bonus_rate, prize_amount, start_time=None, end_time=None,
+                 spu=None, image_url=None,
+                 url=None, link=None, ticket_id=None, ticket_total_number=None, ticket_used_number=None,
+                 ticket_amount=None,
                  ticket_valid=None, good_come=None):
-        self.jingfenclass_id = jingfenclass_id
+        self.jingfen_class_id = jingfenclass_id
         self.title = title
         self.sku = sku
         self.price = price
@@ -350,14 +348,13 @@ class Product(BaseModel, db.Model):
 
         # pass
 
-    # def __repr__(self):
-    #     return self.title
+        # def __repr__(self):
+        #     return self.title
 
-    # def to_dict(self):
-    #     product_dict = {
-    #         "jd"
-    #     }
-
+        # def to_dict(self):
+        #     product_dict = {
+        #         "jd"
+        #     }
 
 
 def manager():
@@ -366,22 +363,28 @@ def manager():
     migrate = Migrate(app, db)
     manager = Manager(app)
     manager.add_command('db', MigrateCommand)
-    return manager
+    return manager.run()
+
 
 def get_all():
     return JingFenClass.query.filter_by(type=0).count()
 
-#---------------------------------------------#view------------------------------------------------------------------------#
+
+# ---------------------------------------------#view------------------------------------------------------------------------#
 
 app = create_app("development")
+
 
 @app.route('/index')
 def index():
     return "hello"
     pass
 
+
 if __name__ == '__main__':
     # app.run(debug=True)
     # print get_all()
-    manager = manager()
-    manager.run()
+    Fire(Commons)
+    # Fire(Product)
+    # manager = manager()
+    # manager.run()
