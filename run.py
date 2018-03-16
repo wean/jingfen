@@ -3,6 +3,8 @@
 # @Time    : 2018/3/12 下午11:57
 # 导包
 import functools
+from fire import Fire
+import copy
 from flask import session, g, jsonify
 from werkzeug.routing import BaseConverter
 import logging
@@ -10,6 +12,7 @@ import redis
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
+from sqlalchemy import String, Boolean, Float
 from flask_wtf import CSRFProtect
 from flask_session import Session
 from logging.handlers import RotatingFileHandler
@@ -17,6 +20,8 @@ import arrow
 import json
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
+import better_exceptions
+better_exceptions.MAX_LENGTH = None
 
 
 
@@ -74,7 +79,7 @@ config = {
 #---------------------------------------------#db and create_app------------------------------------------------------------------------#
 db = SQLAlchemy()
 
-
+db_base = db.Column
 # 实现csrf保护
 csrf = CSRFProtect()
 
@@ -175,9 +180,9 @@ class RegexConverter(BaseConverter):
 class Commons(object):
 
     def __init__(self):
-        pass
+        self.name = None
 
-    def login_required(f):
+    def login_required(self, f):
         """
         验证用户登录的装饰器
         :param f:
@@ -207,7 +212,7 @@ class Commons(object):
         return now
 
 
-    def str_to_datetime(time_str):
+    def str_to_datetime(self, time_str):
         if isinstance(time_str, str):
             datetime = arrow.get(time_str).datetime
         elif isinstance(time_str, int):
@@ -215,6 +220,32 @@ class Commons(object):
         else:
             return
         return datetime
+
+    @staticmethod
+    def save(obj):
+        try:
+            with app.app_context():
+                db.session.add(obj)
+                db.session.commit()
+        except Exception as e:
+            raise Exception(e)
+        finally:
+            return obj
+
+    def get_datetime_by_timestamp(self, data):
+        """
+        递归处理时间戳
+        :param data:
+        :return:
+        """
+        year = self.now().year
+        data = copy.deepcopy(data)
+        datetime = self.str_to_datetime(data)
+        if datetime and datetime.year != year and len(data) > 0:
+            data = data[:len(data) - 1:]
+            datetime = self.get_datetime_by_timestamp(data)
+        return datetime
+
 
 
 
@@ -236,18 +267,18 @@ class JingFenClass(BaseModel, db.Model):
     """
     __tablename__ = "jingfen_class"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    jd_uid = db.Column(db.String(128), unique=True, nullable=True)
-    name = db.Column(db.String(128), unique=True, nullable=False)
-    sub_name = db.Column(db.String(32), nullable=False, default='')
-    url = db.Column(db.String(100), nullable=False, default='')
-    pic_url = db.Column(db.String(100), nullable=False, default='')
+    jd_uid = db.Column(db.String(512), unique=True, nullable=True)
+    name = db.Column(db.String(512), unique=True, nullable=False)
+    sub_name = db.Column(db.String(512), nullable=False, default='')
+    url = db.Column(db.String(512), nullable=False, default='')
+    pic_url = db.Column(db.String(512), nullable=False, default='')
     type = db.Column(db.Integer, unique=False, nullable=False, default=0)
     content_skus = db.Column(db.Text, nullable=True, default='')
-    # houses = db.relationship("House", backref="user")  # 用户发布的房子
-    # orders = db.relationship("Order", backref="user")  # 用户下的订单
+    products = db.relationship('Product', backref='jingfen_class', lazy='dynamic')
 
-    def __init__(self, name):
+    def __init__(self, name=None, jd_uid=None):
         self.name = name
+        self.jd_uid = jd_uid
 
     def to_dict(self):
         """将对象转换为字典数据"""
@@ -265,12 +296,68 @@ class JingFenClass(BaseModel, db.Model):
         }
         return class_dict
 
-# class Product(BaseModel, db.Model):
+    # def __repr__(self):
+    #     return self.name
+
+
+class Product(BaseModel, db.Model):
     """
     京粉产品
     """
-    # jd_uid = db.Column(db.String(128), unique=True, nullable=True)
-    # jingfen_class = relationship('JingFenClass', back_populates='jingfen_class')
+
+    __tablename__ = "jingfen_products"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
+    title = db.Column(db.Text, nullable=False, default='')
+    sku = db.Column(db.String(512), nullable=True, unique=True, index=True)
+    spu = db.Column(db.String(512), nullable=True, unique=True)
+    price = db_base(db.Float, nullable=True, default=0)
+    bonus_rate = db_base(db.Float, nullable=False, default=0)
+    prize_amout = db_base(db.Float, nullable=False, default=0)
+    image_url = db_base(db.Text, nullable=True)
+    url = db_base(db.Text, nullable=True)
+    link = db_base(db.Text, nullable=True)
+    ticket_id = db_base(db.String(512), nullable=True)
+    ticket_total_number = db_base(db.Integer, nullable=True, default=0)
+    ticket_used_number = db_base(db.Integer, nullable=True, default=0)
+    ticket_amount = db_base(db.Float, nullable=True, default=0)
+    start_time = db_base(db.DateTime, default=Commons.now(), nullable=True)
+    end_time = db_base(db.DateTime, default=Commons.now(), nullable=True)
+    ticket_valid = db_base(db.Boolean, default=False)
+    good_come = db_base(db.Integer, default=0)
+    jingfen_class_id = db_base(db.Integer, db.ForeignKey('jingfen_class.id'))
+
+    def __init__(self, jingfenclass_id, title, sku, price, bonus_rate, prize_amount, start_time=None, end_time=None, spu=None, image_url=None,
+                 url=None, link=None, ticket_id=None, ticket_total_number=None, ticket_used_number=None, ticket_amount=None,
+                 ticket_valid=None, good_come=None):
+        self.jingfenclass_id = jingfenclass_id
+        self.title = title
+        self.sku = sku
+        self.price = price
+        self.bonus_rate = bonus_rate
+        self.prize_amout = prize_amount
+        self.start_time = start_time if start_time else Commons.now()
+        self.end_time = end_time if end_time else Commons.now()
+        self.spu = spu
+        self.image_url = image_url
+        self.url = url
+        self.link = link
+        self.ticket_id = ticket_id
+        self.ticket_total_number = ticket_total_number
+        self.ticket_used_number = ticket_used_number
+        self.ticket_amount = ticket_amount
+        self.ticket_valid = ticket_valid
+        self.good_come = good_come
+
+        # pass
+
+    # def __repr__(self):
+    #     return self.title
+
+    # def to_dict(self):
+    #     product_dict = {
+    #         "jd"
+    #     }
+
 
 
 def manager():
