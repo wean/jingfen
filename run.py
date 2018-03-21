@@ -44,6 +44,7 @@ class Config:
     # 创建 redis参数
     REDIS_HOST = "118.24.159.168"
     REDIS_PORT = 6379
+    REDIS_DB = 10
 
     # flask-session 使用参数
     SESSION_TYPE = "redis"  # 利用redis 来保存session会话
@@ -246,7 +247,7 @@ class Commons(object):
 
 class BaseModel(Commons, object):
     """模型基类，为每个模型添加创建时间和更新时间"""
-
+    now = Commons.now()
     def __init__(self):
         super(BaseModel, self).__init__()
 
@@ -260,13 +261,13 @@ class JingFenClass(BaseModel, db.Model):
     """
     __tablename__ = "jingfen_class"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    jd_uid = db.Column(db.String(512), unique=True, nullable=True)
-    name = db.Column(db.String(512), unique=True, nullable=False)
-    sub_name = db.Column(db.String(512), nullable=False, default='')
-    url = db.Column(db.String(512), nullable=False, default='')
-    pic_url = db.Column(db.String(512), nullable=False, default='')
+    jd_uid = db.Column(db.String(128), unique=True, nullable=True)
+    name = db.Column(db.String(128), unique=True, nullable=False)
+    sub_name = db.Column(db.String(128), nullable=False, default='')
+    url = db.Column(db.String(128), nullable=False, default='')
+    pic_url = db.Column(db.String(128), nullable=False, default='')
     type = db.Column(db.Integer, unique=False, nullable=False, default=0)
-    content_skus = db.Column(db.Text, nullable=True, default='')
+    content_skus = db.Column(db.String(128), nullable=True, default='')
     products = db.relationship('Product', backref='jingfenclass') # 分类下的所有产品
 
     def __init__(self, name=None, jd_uid=None):
@@ -302,16 +303,16 @@ class Product(BaseModel, db.Model):
 
     __tablename__ = "jingfen_products"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
-    title = db.Column(db.Text, nullable=False, default='')
-    sku = db.Column(db.String(512), nullable=True, unique=True, index=True)
-    spu = db.Column(db.String(512), nullable=True, unique=True)
+    title = db.Column(db.String(128), nullable=False, default='')
+    sku = db.Column(db.String(128), nullable=True, unique=True, index=True)
+    spu = db.Column(db.String(128), nullable=True, unique=True)
     price = db_base(db.Float, nullable=True, default=0)
     bonus_rate = db_base(db.Float, nullable=False, default=0)
     prize_amout = db_base(db.Float, nullable=False, default=0)
-    image_url = db_base(db.Text, nullable=True)
-    url = db_base(db.Text, nullable=True)
-    link = db_base(db.Text, nullable=True)
-    ticket_id = db_base(db.String(512), nullable=True)
+    image_url = db_base(db.String(128), nullable=True)
+    url = db_base(db.String(128), nullable=True)
+    link = db_base(db.String(128), nullable=True)
+    ticket_id = db_base(db.String(128), nullable=True)
     ticket_total_number = db_base(db.Integer, nullable=True, default=0)
     ticket_used_number = db_base(db.Integer, nullable=True, default=0)
     ticket_amount = db_base(db.Float, nullable=True, default=0)
@@ -321,12 +322,14 @@ class Product(BaseModel, db.Model):
     good_come = db_base(db.Integer, default=0)
     jingfen_class_id = db_base(db.Integer, db.ForeignKey('jingfen_class.id'))
     jingfen_class = relationship('JingFenClass') # jingfen_calss 映射到JingFenClass 这个对象
+    group_prson_number = db_base(db.Integer, default=0)
+    group_price = db_base(db.Float, default=0)
 
     def __init__(self, jingfenclass_id, title, sku, price, bonus_rate, prize_amount, start_time=None, end_time=None,
                  spu=None, image_url=None,
                  url=None, link=None, ticket_id=None, ticket_total_number=None, ticket_used_number=None,
                  ticket_amount=None,
-                 ticket_valid=None, good_come=None):
+                 ticket_valid=None, good_come=None, group_price=0, group_prson_number=0):
         self.jingfen_class_id = jingfenclass_id
         self.title = title
         self.sku = sku
@@ -345,6 +348,8 @@ class Product(BaseModel, db.Model):
         self.ticket_amount = ticket_amount
         self.ticket_valid = ticket_valid
         self.good_come = good_come
+        self.group_prson_number = group_prson_number
+        self.group_price = group_price
 
         # pass
 
@@ -384,7 +389,8 @@ def index():
 if __name__ == '__main__':
     # app.run(debug=True)
     # print get_all()
-    Fire(Commons)
+    # Fire(Commons)
     # Fire(Product)
-    # manager = manager()
+    manager()
     # manager.run()
+    # app.run(host='0.0.0.0', port=9000, debug=True)

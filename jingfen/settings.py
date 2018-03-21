@@ -16,7 +16,7 @@ NEWSPIDER_MODULE = 'jingfen.spiders'
 
 LOG_LEVEL = "WARNING"
 
-DOWNLOAD_DELAY = 0.25
+# DOWNLOAD_DELAY = 0.25
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'jfen (+http://www.yourdomain.com)'
