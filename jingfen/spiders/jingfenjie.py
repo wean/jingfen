@@ -58,15 +58,17 @@ class JingfenjieSpider(Commons, scrapy.Spider):
                 product_sku_ids=product_sku_ids,
                 sub_name=sub_name,
                 type=type,
-                come_from=come_from
-            )
+                come_from=come_from)
             if product_sku_ids:
                 for sku_str in product_sku_ids.split(','):
-                    yield scrapy.Request(self.jingfen_product_bonus_url.format(sku_str),
-                                         callback=self.parse_products_bonus_data,
-                                         meta={"jd_uid": jd_uid, "sku_str": sku_str,
-                                               "class_name": name}
-                                         )
+                    yield scrapy.Request(
+                        self.jingfen_product_bonus_url.format(sku_str),
+                        callback=self.parse_products_bonus_data,
+                        meta={
+                            "jd_uid": jd_uid,
+                            "sku_str": sku_str,
+                            "class_name": name
+                        })
             yield item
 
     def parse_products_bonus_data(self, response):
@@ -101,9 +103,12 @@ class JingfenjieSpider(Commons, scrapy.Spider):
                 self.jingfen_product_ticket_url.format(item['sku']),
                 # self.jingfen_product_ticket_url.format('22086779314'),
                 callback=self.parse_products_ticket_data,
-                meta={"item": deepcopy(item), "jd_uid": jd_uid, "sku": item['sku'],
-                      "class_name": class_name}
-            )
+                meta={
+                    "item": deepcopy(item),
+                    "jd_uid": jd_uid,
+                    "sku": item['sku'],
+                    "class_name": class_name
+                })
         pass
 
     def parse_products_ticket_data(self, response):
@@ -140,6 +145,7 @@ class JingfenjieSpider(Commons, scrapy.Spider):
             item['link'] = one_data['link']
             item['start_time'] = one_data['validBeginTime']
             item['end_time'] = one_data['validEndTime']
-            item['ticket_valid'] = True if int(one_data['couponValid']) == 1 else False
+            item['ticket_valid'] = True if int(
+                one_data['couponValid']) == 1 else False
             # print item
             yield item

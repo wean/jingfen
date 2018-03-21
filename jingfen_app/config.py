@@ -31,7 +31,8 @@ class Config:
     SESSION_TYPE = "redis"  # 利用redis 来保存session会话
     #
     SESSION_USE_SIGNER = True  # 为sesson_id进行签名
-    SESSION_REDIS = redis.StrictRedis(host=REDIS_HOST, port=REDIS_PORT)  # redis 缓存设置
+    SESSION_REDIS = redis.StrictRedis(
+        host=REDIS_HOST, port=REDIS_PORT)  # redis 缓存设置
     #
     PERMANENT_SESSION_LIFETIME = 86400  # session数据的有效期 秒
 

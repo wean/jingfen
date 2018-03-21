@@ -50,7 +50,8 @@ class Config:
     SESSION_TYPE = "redis"  # 利用redis 来保存session会话
     #
     SESSION_USE_SIGNER = True  # 为sesson_id进行签名
-    SESSION_REDIS = redis.StrictRedis(host=REDIS_HOST, port=REDIS_PORT)  # redis 缓存设置
+    SESSION_REDIS = redis.StrictRedis(
+        host=REDIS_HOST, port=REDIS_PORT)  # redis 缓存设置
     #
     PERMANENT_SESSION_LIFETIME = 86400  # session数据的有效期 秒
 
@@ -84,9 +85,11 @@ csrf = CSRFProtect()
 
 logging.basicConfig(level=logging.DEBUG)  # 调试debug级
 # 创建日志记录器，指明日志保存的路径、每个日志文件的最大大小、保存的日志文件个数上限
-file_log_handler = RotatingFileHandler("logs/log", maxBytes=1024 * 1024 * 100, backupCount=10)
+file_log_handler = RotatingFileHandler(
+    "logs/log", maxBytes=1024 * 1024 * 100, backupCount=10)
 # 创建日志记录的格式                 日志等级    输入日志信息的文件名 行数    日志信息
-formatter = logging.Formatter('%(levelname)s %(filename)s:%(lineno)d %(message)s')
+formatter = logging.Formatter(
+    '%(levelname)s %(filename)s:%(lineno)d %(message)s')
 # 为刚创建的日志记录器设置日志记录格式
 file_log_handler.setFormatter(formatter)
 # 为全局的日志工具对象（flask app使用的）添加日后记录器
@@ -172,6 +175,7 @@ class RegexConverter(BaseConverter):
 
 # ---------------------------------------------#commons------------------------------------------------------------------------#
 
+
 class Commons(object):
     def __init__(self):
         self.name = None
@@ -203,7 +207,8 @@ class Commons(object):
         获取当前时间
         :return:
         """
-        now = arrow.now().datetime if not is_str else arrow.now().format(format)
+        now = arrow.now().datetime if not is_str else arrow.now().format(
+            format)
 
         return now
 
@@ -248,6 +253,7 @@ class Commons(object):
 class BaseModel(Commons, object):
     """模型基类，为每个模型添加创建时间和更新时间"""
     now = Commons.now()
+
     def __init__(self):
         super(BaseModel, self).__init__()
 
@@ -268,7 +274,7 @@ class JingFenClass(BaseModel, db.Model):
     pic_url = db.Column(db.String(128), nullable=False, default='')
     type = db.Column(db.Integer, unique=False, nullable=False, default=0)
     content_skus = db.Column(db.String(128), nullable=True, default='')
-    products = db.relationship('Product', backref='jingfenclass') # 分类下的所有产品
+    products = db.relationship('Product', backref='jingfenclass')  # 分类下的所有产品
 
     def __init__(self, name=None, jd_uid=None):
         self.create_time = self.now
@@ -288,7 +294,6 @@ class JingFenClass(BaseModel, db.Model):
             "type": self.type,
             "create_time": arrow.get(self.create_time).format(),
             "content_skus": json.loads(self.create_time)
-
         }
         return class_dict
 
@@ -302,7 +307,8 @@ class Product(BaseModel, db.Model):
     """
 
     __tablename__ = "jingfen_products"
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
+    id = db.Column(
+        db.Integer, primary_key=True, autoincrement=True, index=True)
     title = db.Column(db.String(128), nullable=False, default='')
     sku = db.Column(db.String(128), nullable=True, unique=True, index=True)
     spu = db.Column(db.String(128), nullable=True, unique=True)
@@ -321,15 +327,32 @@ class Product(BaseModel, db.Model):
     ticket_valid = db_base(db.Boolean, default=False)
     good_come = db_base(db.Integer, default=0)
     jingfen_class_id = db_base(db.Integer, db.ForeignKey('jingfen_class.id'))
-    jingfen_class = relationship('JingFenClass') # jingfen_calss 映射到JingFenClass 这个对象
+    jingfen_class = relationship(
+        'JingFenClass')  # jingfen_calss 映射到JingFenClass 这个对象
     group_prson_number = db_base(db.Integer, default=0)
     group_price = db_base(db.Float, default=0)
 
-    def __init__(self, jingfenclass_id, title, sku, price, bonus_rate, prize_amount, start_time=None, end_time=None,
-                 spu=None, image_url=None,
-                 url=None, link=None, ticket_id=None, ticket_total_number=None, ticket_used_number=None,
+    def __init__(self,
+                 jingfenclass_id,
+                 title,
+                 sku,
+                 price,
+                 bonus_rate,
+                 prize_amount,
+                 start_time=None,
+                 end_time=None,
+                 spu=None,
+                 image_url=None,
+                 url=None,
+                 link=None,
+                 ticket_id=None,
+                 ticket_total_number=None,
+                 ticket_used_number=None,
                  ticket_amount=None,
-                 ticket_valid=None, good_come=None, group_price=0, group_prson_number=0):
+                 ticket_valid=None,
+                 good_come=None,
+                 group_price=0,
+                 group_prson_number=0):
         self.jingfen_class_id = jingfenclass_id
         self.title = title
         self.sku = sku

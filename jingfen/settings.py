@@ -43,14 +43,20 @@ ROBOTSTXT_OBEY = True
 
 # Override the default request headers:
 DEFAULT_REQUEST_HEADERS = {
-  # 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-  'Accept': "application/json",
-  'Accept-Language': 'en',
-  'Content-Type': "application/x-www-form-urlencoded",
-  'Cache-Control': "no-cache",
-  # 'Referer': "https://qwd.jd.com/goodslist.shtml?actId=10473&title=%E5%A5%BD%E5%88%B8%E5%95%86%E5%93%81"
-  "Referer": "https://qwd.jd.com/",
-  "User-Agent": "Mozilla/5.0 (Linux; Android 5.0; SM-G900P Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Mobile Safari/537.36"
+    # 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept':
+    "application/json",
+    'Accept-Language':
+    'en',
+    'Content-Type':
+    "application/x-www-form-urlencoded",
+    'Cache-Control':
+    "no-cache",
+    # 'Referer': "https://qwd.jd.com/goodslist.shtml?actId=10473&title=%E5%A5%BD%E5%88%B8%E5%95%86%E5%93%81"
+    "Referer":
+    "https://qwd.jd.com/",
+    "User-Agent":
+    "Mozilla/5.0 (Linux; Android 5.0; SM-G900P Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Mobile Safari/537.36"
 }
 
 # Enable or disable spider middlewares

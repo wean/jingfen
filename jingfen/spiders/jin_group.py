@@ -21,7 +21,8 @@ class JingGroupSpider(Commons, scrapy.Spider):
     name = '拼购'
     allowed_domains = ['jd.com']
     uri = "https://qwd.jd.com"
-    jingfen_url = "{}/cgi-bin/qwd_pin_gou?pageSize=20&pageIndex={}&cid1=".format(uri, 1)
+    jingfen_url = "{}/cgi-bin/qwd_pin_gou?pageSize=20&pageIndex={}&cid1=".format(
+        uri, 1)
     jingfen_product_bonus_url = "%s/fcgi-bin/qwd_searchitem_ex?skuid={}" % uri
     jingfen_product_ticket_url = "%s/fcgi-bin/qwd_coupon_query?sku={}" % uri
     start_urls = [jingfen_url]
@@ -65,18 +66,21 @@ class JingGroupSpider(Commons, scrapy.Spider):
             yield scrapy.Request(
                 self.jingfen_product_ticket_url.format(item['sku']),
                 callback=self.parse_products_ticket_data,
-                meta={"item": deepcopy(item), "jd_uid": self.jd_uid, "sku": item['sku'],
-                      "class_name": self.class_name}
-            )
-        print(u"当前请求到第[{}]页".format(index)), (self.jingfen_url.format(self.uri, index + 1))
+                meta={
+                    "item": deepcopy(item),
+                    "jd_uid": self.jd_uid,
+                    "sku": item['sku'],
+                    "class_name": self.class_name
+                })
+        print(u"当前请求到第[{}]页".format(index)), (self.jingfen_url.format(
+            self.uri, index + 1))
         while index < 50:
 
             try:
                 yield scrapy.Request(
                     self.jingfen_url.format(self.uri, index + 1),
                     callback=self.parse,
-                    meta={'index': index + 1}
-                )
+                    meta={'index': index + 1})
             except Exception as e:
                 print e
             index += 1
@@ -104,5 +108,6 @@ class JingGroupSpider(Commons, scrapy.Spider):
             item['link'] = one_data['link']
             item['start_time'] = one_data['validBeginTime']
             item['end_time'] = one_data['validEndTime']
-            item['ticket_valid'] = True if int(one_data['couponValid']) == 1 else False
+            item['ticket_valid'] = True if int(
+                one_data['couponValid']) == 1 else False
             yield item

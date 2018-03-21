@@ -29,7 +29,8 @@ class JingfenPipeline(Commons, object):
 
     def save_class_data(self, class_data):
 
-        one_class = JingFenClass.query.filter_by(jd_uid=class_data['jd_uid']).first()
+        one_class = JingFenClass.query.filter_by(
+            jd_uid=class_data['jd_uid']).first()
         name = class_data['name'],
         pic_url = class_data['pic_url'],
         url = class_data['url'],
@@ -62,8 +63,10 @@ class JingfenPipeline(Commons, object):
         sku = item['sku']
         spu = item['spu']
         price = decimal.Decimal(item['price']) if item['price'] else 0
-        bonus_rate = decimal.Decimal(item['bonus_rate']) if item['bonus_rate'] else 0
-        prize_amout = decimal.Decimal(item['prize_amout']) if item['prize_amout'] else 0
+        bonus_rate = decimal.Decimal(
+            item['bonus_rate']) if item['bonus_rate'] else 0
+        prize_amout = decimal.Decimal(
+            item['prize_amout']) if item['prize_amout'] else 0
         image_url = item['image_url']
         url = item['url']
         good_come = int(item['good_come'])
@@ -93,11 +96,15 @@ class JingfenPipeline(Commons, object):
         else:
             end_time = None
 
-        group_price = decimal.Decimal(item['group_price']) if 'group_price' in item and item['group_price'] else 0
-        group_prson_number = int(item['group_prson_number']) if 'group_prson_number' in item and item[
-            'group_prson_number'] else 0
+        group_price = decimal.Decimal(
+            item['group_price']
+        ) if 'group_price' in item and item['group_price'] else 0
+        group_prson_number = int(
+            item['group_prson_number']
+        ) if 'group_prson_number' in item and item['group_prson_number'] else 0
 
-        ticket_valid = item['ticket_valid'] if 'ticket_valid' in item else False
+        ticket_valid = item[
+            'ticket_valid'] if 'ticket_valid' in item else False
         product = Product.query.filter_by(sku=sku).first()
         if product:
             product.title = title
@@ -120,11 +127,25 @@ class JingfenPipeline(Commons, object):
             product.group_prson_number = group_prson_number
             product.group_price = group_price
         else:
-            product = Product(jingfen_class_id, title, sku, price, bonus_rate,
-                              prize_amout, start_time=start_time, end_time=end_time, spu=spu, image_url=image_url,
-                              url=url, link=link, ticket_id=ticket_id, ticket_total_number=ticket_total_number,
-                              ticket_used_number=ticket_used_number, ticket_amount=ticket_amount,
-                              ticket_valid=ticket_valid, good_come=good_come, group_price=group_price,
-                              group_prson_number=group_prson_number
-                              )
+            product = Product(
+                jingfen_class_id,
+                title,
+                sku,
+                price,
+                bonus_rate,
+                prize_amout,
+                start_time=start_time,
+                end_time=end_time,
+                spu=spu,
+                image_url=image_url,
+                url=url,
+                link=link,
+                ticket_id=ticket_id,
+                ticket_total_number=ticket_total_number,
+                ticket_used_number=ticket_used_number,
+                ticket_amount=ticket_amount,
+                ticket_valid=ticket_valid,
+                good_come=good_come,
+                group_price=group_price,
+                group_prson_number=group_prson_number)
         self.save(product)
