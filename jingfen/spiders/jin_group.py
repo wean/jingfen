@@ -4,12 +4,13 @@ import json
 import logging
 from run import Commons
 from copy import deepcopy
+from utils.services import Common
 
 logger = logging.getLogger(__name__)
 import better_exceptions
 
 better_exceptions.MAX_LENGTH = None
-from jingfen.items import ClassItem, ProductItem
+from jingfen.items import ProductItem
 from run import JingFenClass
 import better_exceptions
 
@@ -26,7 +27,7 @@ class JingGroupSpider(Commons, scrapy.Spider):
     start_urls = [jingfen_url]
 
     def __init__(self):
-
+        self.common = Common()
         self.headers = {
             'Accept': "application/json",
             'Referer': "https://qwd.jd.com/",
@@ -54,7 +55,7 @@ class JingGroupSpider(Commons, scrapy.Spider):
             item['sku'] = one_product['skuid']
             item['spu'] = one_product['spuid']
             item['price'] = one_product['price']
-            item['bonus_rate'] = one_product['comRate']
+            item['bonus_rate'] = self.common.holds_item_bonus_rate(one_product)
             item['prize_amout'] = one_product['commissionprice']
             item['image_url'] = one_product['skuimgurl']
             item['url'] = one_product['skuurl']
@@ -67,8 +68,6 @@ class JingGroupSpider(Commons, scrapy.Spider):
                 meta={"item": deepcopy(item), "jd_uid": self.jd_uid, "sku": item['sku'],
                       "class_name": self.class_name}
             )
-        # import ipdb
-        # ipdb.set_trace()
         print(u"当前请求到第[{}]页".format(index)), (self.jingfen_url.format(self.uri, index + 1))
         while index < 50:
 
@@ -85,13 +84,9 @@ class JingGroupSpider(Commons, scrapy.Spider):
     def parse_products_ticket_data(self, response):
         """
         获取商品优惠券信息
-        :param response:
-        :return:
         """
         item = deepcopy(response.meta['item'])
-        jd_uid = response.meta['jd_uid']
         sku = response.meta['sku']
-        class_name = response.meta['class_name']
         item['come_from'] = "product_detail"
         item['jingfen_class_id'] = self.jingfen_class_id
         product_ticket_data = json.loads(response.body)

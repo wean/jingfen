@@ -4,7 +4,7 @@ import json
 import logging
 from run import Commons
 from copy import deepcopy
-
+from utils.services import Common
 logger = logging.getLogger(__name__)
 import better_exceptions
 
@@ -26,7 +26,7 @@ class JingfenjieSpider(Commons, scrapy.Spider):
     start_urls = [jingfen_url]
 
     def __init__(self):
-
+        self.common = Common()
         self.headers = {
             'Accept': "application/json",
             'Referer': "https://qwd.jd.com/",
@@ -92,7 +92,7 @@ class JingfenjieSpider(Commons, scrapy.Spider):
             item['sku'] = one_product['skuid']
             item['spu'] = one_product['spuid']
             item['price'] = one_product['price']
-            item['bonus_rate'] = one_product['comRate']
+            item['bonus_rate'] = self.common.holds_item_bonus_rate(one_product)
             item['prize_amout'] = one_product['commissionprice']
             item['image_url'] = one_product['skuimgurl']
             item['url'] = one_product['skuurl']
