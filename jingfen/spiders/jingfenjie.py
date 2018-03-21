@@ -17,7 +17,7 @@ better_exceptions.MAX_LENGTH = None
 
 
 class JingfenjieSpider(Commons, scrapy.Spider):
-    name = 'jingfenjie'
+    name = '首页'
     allowed_domains = ['jd.com']
     uri = "https://qwd.jd.com"
     jingfen_url = "%s/fcgi-bin/qwd_activity_list?env=3" % uri
@@ -124,8 +124,6 @@ class JingfenjieSpider(Commons, scrapy.Spider):
             # Commons.save(jingfen_class)
             jingfen_class.save(jingfen_class)
         jingfen_class = JingFenClass.query.filter_by(jd_uid=jd_uid).first()
-        import ipdb
-        ipdb.set_trace()
         item['jingfen_class_id'] = jingfen_class.id
         product_ticket_data = json.loads(response.body)
         if not product_ticket_data or product_ticket_data['msg'] != 'query success':

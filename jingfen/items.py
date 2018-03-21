@@ -43,3 +43,5 @@ class ProductItem(scrapy.Item):
     good_come = f
     come_from = f
     jingfen_class_id = f
+    group_price = f
+    group_prson_number = f
