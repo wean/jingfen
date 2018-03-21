@@ -94,7 +94,8 @@ class JingfenPipeline(Commons, object):
             end_time = None
 
         group_price = decimal.Decimal(item['group_price']) if 'group_price' in item and item['group_price'] else 0
-        group_prson_number = int(item['group_prson_number']) if 'group_prson_number' in item and item['group_prson_number'] else 0
+        group_prson_number = int(item['group_prson_number']) if 'group_prson_number' in item and item[
+            'group_prson_number'] else 0
 
         ticket_valid = item['ticket_valid'] if 'ticket_valid' in item else False
         product = Product.query.filter_by(sku=sku).first()
@@ -123,7 +124,7 @@ class JingfenPipeline(Commons, object):
                               prize_amout, start_time=start_time, end_time=end_time, spu=spu, image_url=image_url,
                               url=url, link=link, ticket_id=ticket_id, ticket_total_number=ticket_total_number,
                               ticket_used_number=ticket_used_number, ticket_amount=ticket_amount,
-                              ticket_valid=ticket_valid, good_come=good_come,group_price=group_price,
+                              ticket_valid=ticket_valid, good_come=good_come, group_price=group_price,
                               group_prson_number=group_prson_number
                               )
         self.save(product)
