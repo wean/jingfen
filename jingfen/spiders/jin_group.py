@@ -72,7 +72,7 @@ class JingGroupSpider(Commons, scrapy.Spider):
                     "sku": item['sku'],
                     "class_name": self.class_name
                 })
-        print(u"当前请求到第[{}]页".format(index)), (self.jingfen_url.format(
+        logger.info(u"当前请求到第[{}]页".format(index)), (self.jingfen_url.format(
             self.uri, index + 1))
         while index < 50:
 
