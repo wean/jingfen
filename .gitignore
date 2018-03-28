@@ -9,4 +9,5 @@
 *.eggs
 *.project.egg-info
 *.setup
+*.db
 
