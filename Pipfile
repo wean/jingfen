@@ -1,0 +1,48 @@
+[[source]]
+
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+
+[dev-packages]
+
+
+
+[packages]
+
+arrow = "*"
+attrs = "*"
+"backports.functools-lru-cache" = "*"
+"backports.shutil-get-terminal-size" = "*"
+celery = "*"
+celery-with-redis = "*"
+click = "*"
+cryptography = "*"
+flask = "*"
+flask-migrate = "*"
+flask-script = "*"
+flask-session = "*"
+flask-sqlalchemy = "*"
+flask-wtf = "*"
+futures = "*"
+ipdb = "*"
+"jinja2" = "*"
+lxml = "*"
+mysql-python = "*"
+pymysql = "*"
+pyopenssl = "*"
+redis = "*"
+requests = "*"
+requests-file = "*"
+scrapy = "*"
+sqlacodegen = "*"
+sqlalchemy = "*"
+yapf = "*"
+fire = "*"
+better-exceptions = "*"
+
+
+[requires]
+
+python_version = "2.7"
