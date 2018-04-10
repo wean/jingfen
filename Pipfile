@@ -1,16 +1,11 @@
 [[source]]
-
 url = "https://pypi.python.org/simple"
 verify_ssl = true
 name = "pypi"
 
-
 [dev-packages]
 
-
-
 [packages]
-
 arrow = "*"
 attrs = "*"
 "backports.functools-lru-cache" = "*"
@@ -19,30 +14,28 @@ celery = "*"
 celery-with-redis = "*"
 click = "*"
 cryptography = "*"
-flask = "*"
+Flask = "*"
 flask-migrate = "*"
-flask-script = "*"
-flask-session = "*"
-flask-sqlalchemy = "*"
-flask-wtf = "*"
+Flask-Script = "*"
+Flask-Session = "*"
+Flask-SQLAlchemy = "*"
+Flask-WTF = "*"
 futures = "*"
 ipdb = "*"
-"jinja2" = "*"
+"Jinja2" = "*"
 lxml = "*"
 mysql-python = "*"
-pymysql = "*"
-pyopenssl = "*"
+PyMySQL = "*"
+pyOpenSSL = "*"
 redis = "*"
 requests = "*"
 requests-file = "*"
-scrapy = "*"
+Scrapy = "*"
 sqlacodegen = "*"
-sqlalchemy = "*"
+SQLAlchemy = "*"
 yapf = "*"
 fire = "*"
 better-exceptions = "*"
 
-
 [requires]
-
 python_version = "2.7"

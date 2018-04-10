@@ -16,7 +16,7 @@ futures
 ipdb 
 Jinja2 
 lxml 
-MySQL-python 
+# MySQL-python 
 PyMySQL 
 pyOpenSSL 
 redis 
